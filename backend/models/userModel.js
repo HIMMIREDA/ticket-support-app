@@ -20,6 +20,7 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
+    tickets: [{type: mongoose.Schema.Types.ObjectId, ref: "Ticket"}]
   },
   {
     timestamps: true,
@@ -27,4 +28,4 @@ const userSchema = mongoose.Schema(
 );
 
 
-module.exports = mongoose.model("users",userSchema);
+module.exports = mongoose.model("User",userSchema);
