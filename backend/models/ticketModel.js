@@ -9,7 +9,10 @@ const ticketSchema = mongoose.Schema({
     product: {
         type: String,
         required: [true, "Please select a product"],
-        enum: ["iPhone", "Macbook Pro","iMac", "iPad"]
+        enum: {
+            values: ["iPhone", "Macbook Pro","iMac", "iPad"],
+            message: "product can have 4 values : iPhone | Macbook Pro | iMac | iPad"
+        }
     },
     description: {
         type: String,
@@ -18,7 +21,10 @@ const ticketSchema = mongoose.Schema({
     status: {
         type: String,
         required: true,
-        enum: ["new", "open", "closed"],
+        enum: {
+            values: ["new", "open", "closed"],
+            message: "ticket status can have these 3 values : new | open | closed"
+        },
         default: "new"
     }
 
