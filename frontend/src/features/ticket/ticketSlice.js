@@ -58,8 +58,29 @@ export const getTicket = createAsyncThunk(
     const token = thunkAPI.getState().auth.user.token;
 
     try {
-      const tickets = await ticketService.getTicket(ticketId);
-      return tickets;
+      const ticket = await ticketService.getTicket(ticketId, token);
+      return ticket;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// update ticket status to closed
+export const closeTicket = createAsyncThunk(
+  "tickets/close",
+  async (ticketId, thunkAPI) => {
+    const token = thunkAPI.getState().auth.user.token;
+
+    try {
+      const ticket = await ticketService.closeTicket(ticketId, token);
+      return ticket;
     } catch (error) {
       const message =
         (error.response &&
@@ -119,6 +140,35 @@ const ticketSlice = createSlice({
         state.isError = false;
         state.isSuccess = true;
         state.tickets = [];
+        state.message = action.payload;
+      })
+      .addCase(getTicket.pending, (state) => {
+        state.loading = true;
+        state.isSuccess = false;
+        state.isError = false;
+        state.message = "";
+      })
+      .addCase(getTicket.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.ticket = action.payload;
+      })
+      .addCase(getTicket.rejected, (state, action) => {
+        state.loading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.ticket = {};
+        state.message = action.payload;
+      })
+      .addCase(closeTicket.fulfilled, (state, action) => {
+        state.loading = false;
+        state.tickets.map((ticket) =>
+          ticket._id === action.payload._id
+            ? (ticket.status = "closed")
+            : ticket
+        );
+        
         state.message = action.payload;
       });
   },
